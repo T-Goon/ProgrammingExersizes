@@ -1,0 +1,1 @@
+Keep ColorChanger.exe and color-changer.cmd in the same directory and run the exe file through the cmd terminal.
