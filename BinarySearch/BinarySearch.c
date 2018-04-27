@@ -28,7 +28,7 @@ int main()
         }
         if (array[middle] == target){
             printf("The target is at index %d.\n",middle);
-            return 0;
+            return 0; 
         }
     }
     
