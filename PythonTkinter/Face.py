@@ -15,6 +15,7 @@ w.create_oval(250, 100, 300, 150, fill="black")
 # Nose
 w.create_line(200, 175, 230, 225, width=3)
 w.create_line(230, 225, 210, 225, width=3)
+
 # Mouth
 w.create_line(100, 275, 300, 275, width=3)
 
