@@ -26,4 +26,6 @@ app = App(root)
 
 # Enter Tk event loop and destroys main window
 root.mainloop()
+
+# May be unneeded
 root.destroy()
