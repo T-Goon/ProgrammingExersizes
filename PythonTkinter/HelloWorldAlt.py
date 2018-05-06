@@ -9,7 +9,7 @@ class App:
         
         # Exit Button
         self.button = Button(frame, text="Exit",
-        fg= "blue", command = frame.quit)
+        fg = "blue", command = frame.quit)
         self.button.pack(side = RIGHT)
         
         # Prints 'hi!' to console
