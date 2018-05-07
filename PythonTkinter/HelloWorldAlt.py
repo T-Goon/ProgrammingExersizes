@@ -12,7 +12,7 @@ class App:
         fg = "blue", command = frame.quit)
         self.button.pack(side = RIGHT)
         
-        # Prints 'hi!' to console
+        # Prints 'hi!' to console 
         self.hiThere = Button(frame, text="HI", command = self.say_hi)
         self.hiThere.pack(side = LEFT)
 
