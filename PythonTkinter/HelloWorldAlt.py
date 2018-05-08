@@ -4,6 +4,7 @@ class App:
 
     # Contructor
     def __init__(self, master):
+        
         frame = Frame(master)
         frame.pack()
         
