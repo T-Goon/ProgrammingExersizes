@@ -19,12 +19,13 @@ def rem(a, b):
 
 
 def main():
-    rep =1
+    rep = true
 
-    # Title
     print("This is a Calculator.")
 
-    while rep == 1:
+    # Continue To Calculate Until User Indicates to Stop
+    while rep:
+        
         # prompt for 2 digits and the operation
         dig1 = int(input("Enter the first digit. Press enter to continue."))
 
@@ -45,7 +46,10 @@ def main():
             print("You have not entered a valid operation.")
 
         # ask if the user wants to do another calculation
-        rep = int(input("Enter 1 to do another calculation"))
+        temp = printinput("Do another calculation? (y/n)")
+        
+        if temp.lower() == "n":
+            rep = false
 
 
 if __name__ == "__main__":
