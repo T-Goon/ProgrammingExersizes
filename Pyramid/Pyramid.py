@@ -1,4 +1,5 @@
 def main():
+    
     height = int(input("How tall do you want the pyramid to be? "))
 
     # Loop for each row of pyramid
@@ -14,5 +15,6 @@ def main():
         # New line at the end of each row
         print("")
 
+        
 if __name__ == "__main__":
     main()
