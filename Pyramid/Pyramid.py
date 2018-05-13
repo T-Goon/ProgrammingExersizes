@@ -1,3 +1,4 @@
+
 def main():
     
     height = int(input("How tall do you want the pyramid to be? "))
@@ -12,6 +13,7 @@ def main():
         # Loop to print the '*'s on each row
         for y in range((i*2)+1):
             print("*",end="")
+            
         # New line at the end of each row
         print("")
 
