@@ -1,4 +1,5 @@
 def main():
+    
     # Array of values to search through
     array = [1, 1, 3, 5, 6, 8, 9, 10]
     first = 0
