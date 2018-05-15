@@ -13,6 +13,7 @@ def main():
 
     # Binary search algorithm to find target in list
     while first <= end:
+        
         if array[middle] == target:
             print("The target is at index {}.".format(middle))
             return
