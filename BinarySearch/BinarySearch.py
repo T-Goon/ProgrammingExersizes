@@ -15,6 +15,7 @@ def main():
     while first <= end:
         
         if array[middle] == target:
+            
             print("The target is at index {}.".format(middle))
             return
         elif target > array[middle]:
