@@ -18,6 +18,7 @@ def main():
             
             print("The target is at index {}.".format(middle))
             return
+        
         elif target > array[middle]:
             first = middle
             middle = int((first + end)/2)
