@@ -20,6 +20,7 @@ def main():
             return
         
         elif target > array[middle]:
+            
             first = middle
             middle = int((first + end)/2)
         else:
