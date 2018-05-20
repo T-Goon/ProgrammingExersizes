@@ -25,6 +25,7 @@ def main():
             middle = int((first + end)/2)
             
         else:
+            
             end = middle
             middle = int((first + end)/2)
 
