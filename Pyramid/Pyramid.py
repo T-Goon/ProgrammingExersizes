@@ -8,6 +8,7 @@ def main():
 
         # Loop for the spacing of each row
         for x in range(i, height):
+            
             print(" ",end="")
 
         # Loop to print the '*'s on each row
