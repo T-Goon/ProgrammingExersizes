@@ -7,4 +7,5 @@ if EO(int(input("Enter a number: "))):
     print("The number is even.")
     
 else:
+    
     print("The number is odd.")
