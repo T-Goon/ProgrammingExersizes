@@ -1,4 +1,5 @@
 def EO (num):
+    
     return num % 2 == 0
 
 # if the number is even say so, if not say that it is not
