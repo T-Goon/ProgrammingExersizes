@@ -1,6 +1,5 @@
 def main():
 
-    # Variables and Title
     a = 1
     b = 1
     print("Fibonacci Series\n")
