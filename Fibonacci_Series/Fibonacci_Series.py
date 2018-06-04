@@ -8,6 +8,7 @@ def main():
 
     # if the input is 1 or 2 print it out and then exit
     if num == 1:
+        
         print("{}".format(a))
         return 0
     elif num == 2:
