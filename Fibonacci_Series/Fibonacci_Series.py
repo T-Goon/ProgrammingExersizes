@@ -11,6 +11,7 @@ def main():
         
         print("{}".format(a))
         return 0
+    
     elif num == 2:
         print("{}, {}".format(a, b))
         return 0
