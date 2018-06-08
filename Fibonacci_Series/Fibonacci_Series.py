@@ -27,6 +27,7 @@ def main():
 
     # loop to print our the series for any amount beyond 2
     while i < num:
+        
         print("{}, ".format(a), end="")
         i = i + 1
 
