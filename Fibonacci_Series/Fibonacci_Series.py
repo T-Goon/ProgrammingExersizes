@@ -22,7 +22,6 @@ def main():
     a = a+b
     b = a+b
 
-    # counter variable
     i = 0
 
     # loop to print our the series for any amount beyond 2
