@@ -6,7 +6,6 @@ def main():
 
     num = int( input("How many numbers of the Fibonacci Series do you want to print? ") )
 
-    # if the input is 1 or 2 print it out and then exit
     if num == 1:
         
         print("{}".format(a))
