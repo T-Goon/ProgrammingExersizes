@@ -16,7 +16,6 @@ def main():
         print("{}, {}".format(a, b))
         return 0
 
-    # print out the first 2 in series when input is more than 2 and recalculate 'a' and 'b'
     print("{}, {}, ".format(a, b), end="")
     a = a+b
     b = a+b
