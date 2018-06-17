@@ -32,7 +32,7 @@ def main():
             
             break
 
-        print("{}, ".format(b), end="")
+        print("{}, ".format(b), end="") 
         i = i + 1
 
         a = a + b
