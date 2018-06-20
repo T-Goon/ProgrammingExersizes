@@ -34,7 +34,6 @@ def main():
 
         print("{}, ".format(b), end="") 
         i = i + 1
-
         a = a + b
         b = a + b
 
