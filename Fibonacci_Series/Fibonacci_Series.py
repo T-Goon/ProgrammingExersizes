@@ -21,10 +21,10 @@ def main():
     b = a+b
 
     i = 0
-
+    
     # print our the series for any amount beyond 2
     while i < num:
-        
+       
         print("{}, ".format(a), end="")
         i = i + 1
 
