@@ -29,7 +29,6 @@ def main():
         i = i + 1
 
         if i == (num - 2):
-            
             break
  
         print("{}, ".format(b), end="") 
