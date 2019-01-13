@@ -1,3 +1,3 @@
 # ProgrammingExersizes
 
-Practice programming problems.
+Stuff I wrote for practice.
