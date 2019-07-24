@@ -1,3 +1,6 @@
+import time
+start = time.time()
+
 from tensorflow.examples.tutorials.mnist import input_data
 import tensorflow as tf
 
@@ -83,6 +86,29 @@ def select_paramsDNN():
     print('Best Parameters:\n{}: {}\n{}: {}\n{}: {}\n'.format('BatchSize', bestParams['BatchSize'],
         'LearningRate', bestParams['LearningRate'], 'NumEpochs', bestParams['NumEpochs']))
 
+def CNN():
+    model = CNNModel()
+
+    with tf.Session() as sess:
+        sess.run(model.init)
+
+        num_batches = len(data.train.images) // batch_size
+        for epoch in range(num_epoch):
+            avg_cost = 0
+            for batch in range(num_batches):
+                train_x, train_y = data.train.next_batch(batch_size)
+
+                _, c = sess.run([model.optimizer, model.cost], feed_dict={model.x : train_x, model.y : train_y})
+                avg_cost += c / num_batches
+
+            # calculate the accuracy afer each epoch
+            acc = sess.run([model.accuracy], feed_dict={model.x : data.test.images, model.y : data.test.labels})[0]
+            print("Epoch {:.3f} Average Cost: {:.3f}".format(epoch+1, avg_cost))
+            print("Epoch {:.3f} Accuracy: {:.3f}".format(epoch+1, acc))
+
+        print("Training Finished")
+        print("Final Accuracy: {}".format(acc))
+
 
 class DNNModel():
     def __init__(self, lr):
@@ -123,14 +149,64 @@ class CNNModel():
         # 1: single channel image, greyscale
         self.x_reshaped = tf.reshape(self.x, [-1, 28, 28, 1])
 
+        self.conv_layer1 = self.new_conv_layer(self.x_reshaped, 1, 32, [7, 7], [3, 3], 'conv_layer1')
+        self.conv_layer2 = self.new_conv_layer(self.conv_layer1, 32, 64, [7, 7], [3, 3], 'conv_layer2')
+
+        self.reshaped_data = tf.reshape(self.conv_layer2, [-1, 64 * 4 * 4])
+
+        self.w1 = tf.Variable(tf.truncated_normal([4 * 4 * 64, 500], stddev = .03))
+        self.b1 = tf.Variable(tf.truncated_normal([500], stddev = .01))
+
+        self.hidden_out = tf.nn.relu(tf.add(tf.matmul(self.reshaped_data, self.w1), self.b1))
+
+        self.w2 = tf.Variable(tf.truncated_normal([500, 10], stddev = .03))
+        self.b2 = tf.Variable(tf.truncated_normal([10], stddev = .01))
+        self.hidden_out2 = tf.add(tf.matmul(self.hidden_out, self.w2), self.b2)
+
+        self.output = tf.nn.softmax(self.hidden_out2)
+
+        self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels = self.y, logits = self.hidden_out2))
+
+        self.optimizer = tf.train.AdamOptimizer(learning_rate = .001).minimize(self.cost)
+
+        self.correct = tf.equal(tf.argmax(self.y, 1), tf.argmax(self.output, 1))
+        self.accuracy = tf.reduce_mean(tf.cast(self.correct, tf.float32))
+
+        self.init = tf.global_variables_initializer()
+
     def new_conv_layer(self, data, num_channels, num_filters, filter_shape, pool_shape, name):
+        # set of the tensor that represents the shape of the filter
         filter_shape = [filter_shape[0], filter_shape[1], num_channels, num_filters]
 
-        return layer
+        # initialize the weights of the filter
+        weights = tf.Variable(tf.truncated_normal(filter_shape, stddev = .03), name = name+'w')
+        biases = tf.Variable(tf.truncated_normal([num_filters], stddev = .03), name = name+'b')
+
+        # the convolution operation, stride of 1
+        out_layer = tf.nn.conv2d(data, weights, [1, 1, 1, 1], padding = 'SAME')
+
+        out_layer += biases
+
+        out_layer = tf.nn.relu(out_layer)
+
+        p_size = [1, pool_shape[0], pool_shape[1], 1]
+
+        p_strides = [1, pool_shape[0], pool_shape[1], 1]
+
+        out_layer = tf.nn.max_pool(out_layer, p_size, p_strides, padding = 'SAME')
+
+        return out_layer
 
 if __name__ == "__main__":
-    choice = int(input('1. DNN\n2. DNN Select Parameters\n'))
-    if choice == 1:
-        DNN()
-    elif choice == 2:
-        select_paramsDNN()
+    choice = 0
+    while choice < 1 or choice > 3:
+        choice = int(input('1. DNN\n2. DNN Select Parameters\n3. CNN\n'))
+        if choice == 1:
+            DNN()
+        elif choice == 2:
+            select_paramsDNN()
+        elif choice == 3:
+            CNN()
+
+    end = time.time()
+    print('Time: ',end - start)
