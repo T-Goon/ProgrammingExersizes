@@ -1,9 +1,17 @@
 import keras
+from keras.backend.tensorflow_backend import set_session
+from tensorflow.keras.callbacks import ModelCheckpoint
 import tensorflow as tf
 import numpy as np
 import os
 import string
 import re
+
+config = tf.compat.v1.ConfigProto()
+config.gpu_options.allow_growth = True
+config.log_device_placement = True
+sess = tf.compat.v1.Session(config=config)
+set_session(sess)
 
 data_path_train_pos = "C:\\Users\Buddy\Documents\Programs\ProgrammingExersizes\\Neural_Networks\IMDB_reviews\\aclImdb\\train\pos\\"
 data_path_train_neg = "C:\\Users\Buddy\Documents\Programs\ProgrammingExersizes\\Neural_Networks\IMDB_reviews\\aclImdb\\train\\neg\\"
@@ -11,7 +19,7 @@ data_path_test_pos = "C:\\Users\Buddy\Documents\Programs\ProgrammingExersizes\\N
 data_path_test_neg = "C:\\Users\Buddy\Documents\Programs\ProgrammingExersizes\\Neural_Networks\IMDB_reviews\\aclImdb\\test\\neg\\"
 vocab_path = "C:\\Users\Buddy\Documents\Programs\ProgrammingExersizes\\Neural_Networks\IMDB_reviews\\aclImdb\imdb.vocab"
 
-batch_size = 128
+batch_size = 50
 
 def main():
     # create dict from provided vocab file so that each word has a unique id
@@ -68,6 +76,9 @@ def main():
     rating_list_train = [x[x.find('_')+1:x.find('.')] for x in data_train_files]
     rating_list_test = [x[x.find('_')+1:x.find('.')] for x in data_test_files]
 
+    del data_train_files
+    del data_test_files
+
     # convert from string to int
     rating_list_train = [int(x) for x in rating_list_train]
     rating_list_test = [int(x) for x in rating_list_test]
@@ -101,27 +112,30 @@ def main():
     data_test = np.array(data_test)
     data_valid = np.array(data_valid)
 
+    train_generator = batch_Generator(data_train, rating_list_train, batch_size)
+    test_generator = batch_Generator(data_test, rating_list_test, batch_size)
+    valid_generator = batch_Generator(data_valid, rating_list_valid, batch_size)
+
     # initialize the callback class
     hist = AccHistory()
+    checkpointer = ModelCheckpoint(
+    filepath="C:\\Users\Buddy\Documents\Programs\ProgrammingExersizes\\Neural_Networks\IMDB_reviews\checkpoints" + '\model2-{epoch:02d}.hdf5', verbose=1)
 
     model = keras.Sequential()
 
     model.add(keras.layers.Embedding(vocab_size, 500, input_length=max_len))
 
-    model.add(keras.layers.LSTM(500, return_sequences=True))
     model.add(keras.layers.LSTM(500))
 
     model.add(keras.layers.Dense(10, activation='softmax'))
 
     model.compile(optimizer='Adam', loss = 'categorical_crossentropy',
-
     metrics=['categorical_accuracy'])
 
-    print(data_train.shape)
-    print(rating_list_train.shape)
-    model.fit(data_train, rating_list_train, batch_size=batch_size, epochs=10, callbacks=[hist], validation_data=(data_valid, rating_list_valid))
+    model.fit_generator(train_generator.generate(), steps_per_epoch= len(data_train) // batch_size, epochs=10, callbacks=[hist, checkpointer],
+    validation_data=valid_generator.generate(), validation_steps=len(data_valid)//batch_size)
 
-    score = model.evaluate(data_test, rating_list_test, batch_size=batch_size)
+    score = model.evaluate_generator(test_generator.generate(), steps = len(data_train) // batch_size)
 
     print('Test Loss: ', score[0])
     print('Test Accuracy: ', score[1])
@@ -146,11 +160,30 @@ def to_id(data, dictionary):
 class AccHistory(keras.callbacks.Callback):
     def on_train_begin(self, logs={}):
         self.acc = []
-    def on_epoch_end(self, logs={}):
+    def on_epoch_end(self, batch, logs={}):
         self.acc.append(logs.get("acc"))
 
 
+class batch_Generator(object):
+    def __init__(self, input, labels, batch_size):
+        self.data = input
+        self.labels = labels
+        self.batch_size = batch_size
 
+        self.pointer = 0
+
+    def generate(self):
+        x = np.zeros((self.batch_size, 2540))
+        y = np.zeros((self.batch_size, 10))
+
+        while True:
+            if self.pointer + self.batch_size > len(self.data):
+                self.pointer = 0
+
+            x = self.data[self.pointer : self.pointer + self.batch_size]
+            y = self.labels[self.pointer : self.pointer + self.batch_size]
+
+            yield x, y
 
 if __name__ == "__main__":
     main()
