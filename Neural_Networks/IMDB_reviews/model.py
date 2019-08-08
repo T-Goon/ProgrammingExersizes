@@ -127,19 +127,20 @@ def main():
 
     model.add(keras.layers.LSTM(500))
 
+    model.add(keras.layers.Dense(250, activation='relu'))
     model.add(keras.layers.Dense(10, activation='softmax'))
 
     model.compile(optimizer='Adam', loss = 'categorical_crossentropy',
     metrics=['categorical_accuracy'])
 
-    # model.fit_generator(train_generator.generate(), steps_per_epoch= len(data_train) // batch_size, epochs=10, callbacks=[hist, checkpointer],
-    # validation_data=valid_generator.generate(), validation_steps=len(data_valid)//batch_size)
+    model.fit_generator(train_generator.generate(), steps_per_epoch= len(data_train) // batch_size, epochs=10,
+    validation_data=valid_generator.generate(), validation_steps=len(data_valid)//batch_size)
     print(data_valid.shape)
-    model.fit(data_train, rating_list_train, batch_size=batch_size, epochs=10, validation_data=(data_valid, rating_list_valid))
+    # model.fit(data_train, rating_list_train, batch_size=batch_size, epochs=10, validation_data=(data_valid, rating_list_valid))
 
-    # score = model.evaluate_generator(test_generator.generate(), steps = len(data_test) // batch_size)
+    score = model.evaluate_generator(test_generator.generate(), steps = len(data_test) // batch_size)
 
-    score = model.evaluate(data_test, rating_list_test, batch_size=batch_size)
+    # score = model.evaluate(data_test, rating_list_test, batch_size=batch_size)
 
     print('Test Loss: ', score[0])
     print('Test Accuracy: ', score[1])
