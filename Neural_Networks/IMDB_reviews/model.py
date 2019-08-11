@@ -97,16 +97,34 @@ def main():
     rating_list_test = np.array(rating_list_test)
     rating_list_valid = np.array(rating_list_valid)
 
-    max_len = max([len(x) for x in data_train])
+    # max_len = max([len(x) for x in data_train])
+
+    # for x in range(len(data_train)):
+    #     data_train[x] = data_train[x] + [0] * (max_len - len(data_train[x]))
+    #
+    # for x in range(len(data_test)):
+    #     data_test[x] = data_test[x] + [0] * (max_len - len(data_test[x]))
+    #
+    # for x in range(len(data_valid)):
+    #     data_valid[x] = data_valid[x] + [0] * (max_len - len(data_valid[x]))
 
     for x in range(len(data_train)):
-        data_train[x] = data_train[x] + [0] * (max_len - len(data_train[x]))
+        if len(data_train[x]) > 200:
+            data_train[x] = data_train[x][:200]
+        else:
+            data_train[x] = data_train[x] + [0] * (200 - len(data_train[x]))
 
     for x in range(len(data_test)):
-        data_test[x] = data_test[x] + [0] * (max_len - len(data_test[x]))
+        if len(data_test[x]) > 200:
+            data_test[x] = data_test[x][:200]
+        else:
+            data_test[x] = data_test[x] + [0] * (200 - len(data_test[x]))
 
     for x in range(len(data_valid)):
-        data_valid[x] = data_valid[x] + [0] * (max_len - len(data_valid[x]))
+        if len(data_valid[x]) > 200:
+            data_valid[x] = data_valid[x][:200]
+        else:
+            data_valid[x] = data_valid[x] + [0] * (200 - len(data_valid[x]))
 
     data_train = np.array(data_train)
     data_test = np.array(data_test)
@@ -123,22 +141,26 @@ def main():
 
     model = keras.Sequential()
 
-    model.add(keras.layers.Embedding(vocab_size, 500, input_length=max_len))
+    model.add(keras.layers.Embedding(vocab_size, 500, input_length=200))
 
     model.add(keras.layers.LSTM(500))
 
     model.add(keras.layers.Dense(250, activation='relu'))
-    model.add(keras.layers.Dense(10, activation='softmax'))
+    model.add(keras.layers.Dense(10))
+    model.add(keras.layers.Dropout(.2))
+    model.add(keras.layers.Activation('softmax'))
 
     model.compile(optimizer='Adam', loss = 'categorical_crossentropy',
     metrics=['categorical_accuracy'])
 
-    model.fit_generator(train_generator.generate(), steps_per_epoch= len(data_train) // batch_size, epochs=10,
+    model.fit_generator(train_generator.generate(), steps_per_epoch= len(data_train) // batch_size, epochs=100,
     validation_data=valid_generator.generate(), validation_steps=len(data_valid)//batch_size)
-    print(data_valid.shape)
+
     # model.fit(data_train, rating_list_train, batch_size=batch_size, epochs=10, validation_data=(data_valid, rating_list_valid))
 
     score = model.evaluate_generator(test_generator.generate(), steps = len(data_test) // batch_size)
+
+    model.save('model.h5')
 
     # score = model.evaluate(data_test, rating_list_test, batch_size=batch_size)
 
