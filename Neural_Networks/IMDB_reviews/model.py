@@ -20,11 +20,12 @@ data_path_test_neg = "C:\\Users\Buddy\Documents\Programs\ProgrammingExersizes\\N
 vocab_path = "C:\\Users\Buddy\Documents\Programs\ProgrammingExersizes\\Neural_Networks\IMDB_reviews\\aclImdb\imdb.vocab"
 
 batch_size = 50
+rev_size = 500
 
 def main():
     # create dict from provided vocab file so that each word has a unique id
-    vocab = build_vocab(vocab_path)
-    vocab_size = len(vocab)
+    vocab_size = 10000
+    vocab = build_vocab(vocab_path, vocab_size)
 
     # create lists of all of the data files
     data_train_pos = os.listdir(data_path_train_pos)
@@ -70,6 +71,11 @@ def main():
     data_test = data_test[:int(len(data_test)/2)]
     data_valid = data_test[int(len(data_test)/2):]
 
+    # pad and truncate text sequences
+    data_train = keras.preprocessing.sequence.pad_sequences(data_train, maxlen=rev_size, padding='post', truncating='post',value=0)
+    data_test = keras.preprocessing.sequence.pad_sequences(data_test, maxlen=rev_size, padding='post', truncating='post',value=0)
+    data_valid = keras.preprocessing.sequence.pad_sequences(data_valid, maxlen=rev_size, padding='post', truncating='post',value=0)
+
     reversed_vocab = dict(zip(vocab.values(), vocab.keys()))
 
     # get the rating of each review from the filename
@@ -83,52 +89,35 @@ def main():
     rating_list_train = [int(x) for x in rating_list_train]
     rating_list_test = [int(x) for x in rating_list_test]
 
+
     # convert to one-hot vector
-    rating_list_train  = [x-1 for x in rating_list_train]
-    rating_list_test  = [x-1 for x in rating_list_test]
-    rating_list_train = keras.utils.to_categorical(rating_list_train, num_classes=10)
-    rating_list_test = keras.utils.to_categorical(rating_list_test, num_classes=10)
+    # rating_list_train  = [x-1 for x in rating_list_train]
+    # rating_list_test  = [x-1 for x in rating_list_test]
+    # rating_list_train = keras.utils.to_categorical(rating_list_train, num_classes=10)
+    # rating_list_test = keras.utils.to_categorical(rating_list_test, num_classes=10)
+
+    rating_list_train = [[0] if x < 5 else [1] for x in rating_list_train]
+    rating_list_test = [[0] if x < 5 else [1] for x in rating_list_test]
 
     # create validation set labels
     rating_list_test = rating_list_test[:int(len(rating_list_test)/2)]
     rating_list_valid = rating_list_test[int(len(rating_list_test)/2):]
 
-    rating_list_train = np.array(rating_list_train)
-    rating_list_test = np.array(rating_list_test)
-    rating_list_valid = np.array(rating_list_valid)
+    # shuffle the data
+    train_pairs = np.array([[data_train[i], rating_list_train[i]] for i in range(len(data_train))])
+    test_pairs = np.array(list(zip(data_test, rating_list_test)))
+    valid_pairs = np.array(list(zip(data_valid, rating_list_valid)))
+    np.random.shuffle(train_pairs)
+    np.random.shuffle(test_pairs)
+    np.random.shuffle(valid_pairs)
 
-    # max_len = max([len(x) for x in data_train])
+    rating_list_train = np.array([train_pairs[i, 1] for i in range(len(train_pairs))])
+    rating_list_test = np.array([test_pairs[i, 1] for i in range(len(test_pairs))])
+    rating_list_valid = np.array([valid_pairs[i, 1] for i in range(len(valid_pairs))])
 
-    # for x in range(len(data_train)):
-    #     data_train[x] = data_train[x] + [0] * (max_len - len(data_train[x]))
-    #
-    # for x in range(len(data_test)):
-    #     data_test[x] = data_test[x] + [0] * (max_len - len(data_test[x]))
-    #
-    # for x in range(len(data_valid)):
-    #     data_valid[x] = data_valid[x] + [0] * (max_len - len(data_valid[x]))
-
-    for x in range(len(data_train)):
-        if len(data_train[x]) > 200:
-            data_train[x] = data_train[x][:200]
-        else:
-            data_train[x] = data_train[x] + [0] * (200 - len(data_train[x]))
-
-    for x in range(len(data_test)):
-        if len(data_test[x]) > 200:
-            data_test[x] = data_test[x][:200]
-        else:
-            data_test[x] = data_test[x] + [0] * (200 - len(data_test[x]))
-
-    for x in range(len(data_valid)):
-        if len(data_valid[x]) > 200:
-            data_valid[x] = data_valid[x][:200]
-        else:
-            data_valid[x] = data_valid[x] + [0] * (200 - len(data_valid[x]))
-
-    data_train = np.array(data_train)
-    data_test = np.array(data_test)
-    data_valid = np.array(data_valid)
+    data_train = np.array([train_pairs[i, 0] for i in range(len(train_pairs))])
+    data_test = np.array([test_pairs[i, 0] for i in range(len(test_pairs))])
+    data_valid = np.array([valid_pairs[i, 0] for i in range(len(valid_pairs))])
 
     train_generator = batch_Generator(data_train, rating_list_train, batch_size)
     test_generator = batch_Generator(data_test, rating_list_test, batch_size)
@@ -141,19 +130,19 @@ def main():
 
     model = keras.Sequential()
 
-    model.add(keras.layers.Embedding(vocab_size, 500, input_length=200))
+    model.add(keras.layers.Embedding(vocab_size, 100, input_length=rev_size))
 
-    model.add(keras.layers.LSTM(500))
+    model.add(keras.layers.LSTM(rev_size))
 
-    model.add(keras.layers.Dense(250, activation='relu'))
-    model.add(keras.layers.Dense(10))
-    model.add(keras.layers.Dropout(.2))
-    model.add(keras.layers.Activation('softmax'))
+    #model.add(keras.layers.Dense(50, activation='relu'))
+    model.add(keras.layers.Dense(1))
+    #model.add(keras.layers.Dropout(.2))
+    model.add(keras.layers.Activation('sigmoid'))
 
-    model.compile(optimizer='Adam', loss = 'categorical_crossentropy',
-    metrics=['categorical_accuracy'])
+    model.compile(optimizer='Adam', loss = 'binary_crossentropy',
+    metrics=['binary_accuracy'])
 
-    model.fit_generator(train_generator.generate(), steps_per_epoch= len(data_train) // batch_size, epochs=100,
+    model.fit_generator(train_generator.generate(), steps_per_epoch= len(data_train) // batch_size, epochs=5,
     validation_data=valid_generator.generate(), validation_steps=len(data_valid)//batch_size)
 
     # model.fit(data_train, rating_list_train, batch_size=batch_size, epochs=10, validation_data=(data_valid, rating_list_valid))
@@ -167,11 +156,11 @@ def main():
     print('Test Loss: ', score[0])
     print('Test Accuracy: ', score[1])
 
-def build_vocab(filename):
+def build_vocab(filename, size):
     with tf.io.gfile.GFile(filename, "rb") as f:
         words =  f.read().decode("utf-8").split()
         words.insert(0, "<unk>")
-        word_to_id = dict(zip(words, range(len(words))))
+        word_to_id = dict(zip(words[:size], range(size)))
         return word_to_id
 
 def read_words(path, filename):
