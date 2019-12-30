@@ -16,9 +16,9 @@ batch_size = 128
 num_epoch = 20
 num_classes = 10
 
-# reshape the inputs to a 1D array
-x_train = x_train.reshape(x_train.shape[0], 28 * 28)
-x_test = x_test.reshape(x_test.shape[0], 28 * 28)
+# reshape the inputs to a 4D array
+x_train = x_train.reshape(x_train.shape[0], 28, 28, 1)
+x_test = x_test.reshape(x_test.shape[0], 28,  28, 1)
 
 # convert the labels to one-hot vectors
 y_train_onehot = keras.utils.to_categorical(y_train, num_classes)
@@ -29,9 +29,25 @@ train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train_onehot)
 test_dataset = tf.data.Dataset.from_tensor_slices((x_test, y_test_onehot)
 ).batch(batch_size).shuffle(10000).repeat()
 
+# layer weight initializers
+weight_init = keras.initializers.VarianceScaling(scale=1, mode="fan_avg",
+distribution="truncated_normal")
+weight_initRelu = keras.initializers.VarianceScaling(scale=2, mode='fan_in',
+distribution='truncated_normal')
+
 # initialize the model
 model = keras.Sequential()
-model.add(keras.layers.Dense(400, input_shape = (784,), activation='relu'))
+model.add(keras.layers.Conv2D(filters=32, kernel_size=(4,4), activation='relu',
+    input_shape = (28, 28, 1), kernel_initializer=weight_initRelu))
+model.add(keras.layers.MaxPool2D(pool_size=2))
+
+model.add(keras.layers.Conv2D(filters=64, kernel_size=(4,4), activation='relu',
+kernel_initializer=weight_initRelu))
+model.add(keras.layers.MaxPool2D(pool_size=2))
+
+model.add(keras.layers.Flatten())
+model.add(keras.layers.Dense(800, activation='sigmoid',
+kernel_initializer=weight_init))
 model.add(keras.layers.Dense(num_classes, activation='softmax'))
 
 model.compile(optimizer = keras.optimizers.Adam(),
