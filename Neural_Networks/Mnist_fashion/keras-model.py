@@ -1,4 +1,8 @@
-import keras
+import time
+start = time.time()
+
+from tensorflow import keras
+import tensorflow as tf
 
 # load the mnist fashion dataset
 data = keras.datasets.fashion_mnist
@@ -9,7 +13,7 @@ x_train = x_train / 255.0
 x_test = x_test / 255.0
 
 batch_size = 128
-num_epoch = 10
+num_epoch = 20
 num_classes = 10
 
 # reshape the inputs to a 1D array
@@ -19,6 +23,11 @@ x_test = x_test.reshape(x_test.shape[0], 28 * 28)
 # convert the labels to one-hot vectors
 y_train_onehot = keras.utils.to_categorical(y_train, num_classes)
 y_test_onehot = keras.utils.to_categorical(y_test, num_classes)
+
+train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train_onehot)
+).batch(batch_size).shuffle(60000).repeat()
+test_dataset = tf.data.Dataset.from_tensor_slices((x_test, y_test_onehot)
+).batch(batch_size).shuffle(10000).repeat()
 
 # initialize the model
 model = keras.Sequential()
@@ -39,12 +48,15 @@ class AccHistory(keras.callbacks.Callback):
 his = AccHistory()
 
 # train the model
-model.fit(x_train, y_train_onehot, batch_size=batch_size, epochs=num_epoch,
-    verbose=1, callbacks=[his], validation_data=(x_test, y_test_onehot))
+model.fit(train_dataset, epochs=num_epoch, steps_per_epoch=500,
+    callbacks=[his], validation_data=test_dataset, validation_steps=5)
 
 # evaluate the model
-score  = model.evaluate(x_test, y_test_onehot, batch_size=batch_size, verbose=0)
+score  = model.evaluate(test_dataset, steps = 80)
 
 # print out evaluation results
 print('Test Loss: ', score[0])
 print('Test Accuracy: ', score[1])
+
+end = time.time()
+print('Time: ',end - start)
