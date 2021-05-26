@@ -1,4 +1,4 @@
-#BinarySearch
+# BinarySearch
 
 Program to do a binary search on a sorted list of numbers.
 
