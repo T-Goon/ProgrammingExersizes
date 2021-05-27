@@ -1,4 +1,7 @@
-import keras
+# Timothy Goon
+# LSTM to predict the IMDB_reviews data set
+
+from tensorflow import keras
 from keras.backend.tensorflow_backend import set_session
 from tensorflow.keras.callbacks import ModelCheckpoint
 import tensorflow as tf
@@ -13,11 +16,12 @@ config.log_device_placement = True
 sess = tf.compat.v1.Session(config=config)
 set_session(sess)
 
-data_path_train_pos = "C:\\Users\Buddy\Documents\Programs\ProgrammingExersizes\\Neural_Networks\IMDB_reviews\\aclImdb\\train\pos\\"
-data_path_train_neg = "C:\\Users\Buddy\Documents\Programs\ProgrammingExersizes\\Neural_Networks\IMDB_reviews\\aclImdb\\train\\neg\\"
-data_path_test_pos = "C:\\Users\Buddy\Documents\Programs\ProgrammingExersizes\\Neural_Networks\IMDB_reviews\\aclImdb\\test\pos\\"
-data_path_test_neg = "C:\\Users\Buddy\Documents\Programs\ProgrammingExersizes\\Neural_Networks\IMDB_reviews\\aclImdb\\test\\neg\\"
-vocab_path = "C:\\Users\Buddy\Documents\Programs\ProgrammingExersizes\\Neural_Networks\IMDB_reviews\\aclImdb\imdb.vocab"
+# path to data set files
+data_path_train_pos = "aclImdb/train/pos/"
+data_path_train_neg = "aclImdb/train/neg/"
+data_path_test_pos = "aclImdb/test/pos/"
+data_path_test_neg = "aclImdb/test/neg/"
+vocab_path = "aclImdb/imdb.vocab"
 
 batch_size = 50
 rev_size = 500
@@ -35,7 +39,6 @@ def main():
     # combine lists
     data_train_files = data_train_pos + data_train_neg
     data_test_files = data_test_pos + data_test_neg
-
 
     # extract the text from each file
     data_train_pos = [read_words(data_path_train_pos, x) for x in data_train_pos]
@@ -96,6 +99,7 @@ def main():
     # rating_list_train = keras.utils.to_categorical(rating_list_train, num_classes=10)
     # rating_list_test = keras.utils.to_categorical(rating_list_test, num_classes=10)
 
+    # change rating from 1-10 to good vs bad
     rating_list_train = [[0] if x < 5 else [1] for x in rating_list_train]
     rating_list_test = [[0] if x < 5 else [1] for x in rating_list_test]
 
@@ -126,7 +130,7 @@ def main():
     # initialize the callback class
     hist = AccHistory()
     checkpointer = ModelCheckpoint(
-    filepath="C:\\Users\Buddy\Documents\Programs\ProgrammingExersizes\\Neural_Networks\IMDB_reviews\checkpoints" + '\model2-{epoch:02d}.hdf5', verbose=1)
+    filepath="IMDB_reviews/checkpoints" + '/model2-{epoch:02d}.hdf5', verbose=1)
 
     model = keras.Sequential()
 
@@ -137,7 +141,7 @@ def main():
     #model.add(keras.layers.Dense(50, activation='relu'))
     model.add(keras.layers.Dense(1))
     #model.add(keras.layers.Dropout(.2))
-    model.add(keras.layers.Activation('sigmoid'))
+    model.add(keras.layers.Activation('relu'))
 
     model.compile(optimizer='Adam', loss = 'binary_crossentropy',
     metrics=['binary_accuracy'])
@@ -190,7 +194,7 @@ class batch_Generator(object):
 
     def generate(self):
         x = np.zeros((self.batch_size, 2540))
-        y = np.zeros((self.batch_size, 10))
+        y = np.zeros((self.batch_size, 2))
 
         while True:
             if self.pointer + self.batch_size > len(self.data):
