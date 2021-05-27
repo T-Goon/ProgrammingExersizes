@@ -19,7 +19,7 @@ def rem(a, b):
 
 
 def main():
-    rep = true
+    rep = True
 
     print("This is a Calculator.")
 
@@ -46,10 +46,10 @@ def main():
             print("You have not entered a valid operation.")
 
         # ask if the user wants to do another calculation
-        temp = printinput("Do another calculation? (y/n)")
+        temp = input("Do another calculation? (y/n)")
         
         if temp.lower() == "n":
-            rep = false
+            rep = False
 
 
 if __name__ == "__main__":
