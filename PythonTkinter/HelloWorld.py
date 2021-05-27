@@ -1,10 +1,10 @@
-import Tkinter as tk
+import tkinter as tk
 
 # Window
-root = Tk()
+root = tk.Tk()
 
 # Label
-L = Label(root, text = "Hello World")
+L = tk.Label(root, text = "Hello World")
 L.pack()
 
 root.mainloop()
