@@ -1,6 +1,6 @@
 # CartPole
 
-Use of deep Q reinforcement learning to train a 3 layer dense neural network to play the CartPole game on OpenAI gym.
+Uses deep Q reinforcement learning to train a 3 layer dense neural network to play the CartPole game on OpenAI gym.
 
 ![image](https://user-images.githubusercontent.com/32044950/119886626-27e31c80-bf01-11eb-8422-0e9c990e05c1.png)
 
