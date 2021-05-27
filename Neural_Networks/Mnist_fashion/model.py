@@ -1,10 +1,13 @@
 import time
+
+from tensorflow._api.v2 import train
 start = time.time()
 
-from tensorflow.examples.tutorials.mnist import input_data
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
+import numpy as np
 
-data_path = 'data\\fashion'
+data_path = 'data/fashion'
 batch_size = 10
 num_epoch = 20
 
@@ -14,7 +17,32 @@ epochlist = [5, 10, 20, 40, 100] # best 20
 # acc .8991
 # can do hidden size and num of layers later
 
-data = input_data.read_data_sets(data_path, one_hot=True)
+fashion_mnist = tf.keras.datasets.fashion_mnist
+
+(train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
+# scale images pixel values
+train_images = train_images / 255.0
+test_images = test_images / 255.0
+
+# shuffle the data and convert labels to one-hots
+idxs = np.random.permutation(train_images.shape[0])
+train_images = train_images[idxs]
+train_labels = train_labels[idxs]
+z = np.zeros((train_labels.shape[0], 10))
+z[np.arange(train_labels.shape[0]), train_labels] = 1
+train_labels = z
+
+idxs = np.random.permutation(test_images.shape[0])
+test_images = test_images[idxs]
+test_labels = test_labels[idxs]
+z = np.zeros((test_labels.shape[0], 10))
+z[np.arange(test_labels.shape[0]), test_labels] = 1
+test_labels = z
+
+# reshape testing data
+train_images = np.reshape(train_images, (train_images.shape[0], 28*28))
+test_images = np.reshape(test_images, (test_images.shape[0], 28*28))
+
 
 def DNN():
     # intialize model with lr of .0005
@@ -24,13 +52,14 @@ def DNN():
         # initialize graph
         sess.run(model.init)
 
-        num_batches = len(data.train.images) // batch_size
+        num_batches = len(train_images) // batch_size
         # run through the dataset num_epoch number of times
         for epoch in range(num_epoch):
             avg_cost = 0
-            for batch in range(num_batches):
+            for batch in range(num_batches-1):
                 # get the next batch
-                train_x, train_y = data.train.next_batch(batch_size)
+                train_x = train_images[batch*batch_size : (batch+1)*batch_size]
+                train_y = train_labels[batch*batch_size : (batch+1)*batch_size]
                 # train the model
                 _, cost = sess.run([model.optimizer, model.cost],
                     feed_dict={model.x : train_x, model.y : train_y})
@@ -38,7 +67,7 @@ def DNN():
                 avg_cost += cost / num_batches
 
             # calculate the accuracy afer each epoch
-            acc = sess.run([model.accuracy], feed_dict={model.x : data.test.images, model.y : data.test.labels})[0]
+            acc = sess.run([model.accuracy], feed_dict={model.x : test_images, model.y : test_labels})[0]
             print("Epoch {:.3f} Average Cost: {:.3f}".format(epoch+1, avg_cost))
             print("Epoch {:.3f} Accuracy: {:.3f}".format(epoch+1, acc))
 
@@ -59,16 +88,17 @@ def select_paramsDNN():
                     model = DNNModel(lr)
                     sess.run(model.init)
 
-                    num_batches = len(data.train.images) // bs
+                    num_batches = len(train_images) // bs
                     for epoch in range(ep):
                         avg_cost = 0
-                        for batch in range(num_batches):
-                            train_x, train_y = data.train.next_batch(batch_size)
+                        for batch in range(num_batches-1):
+                            train_x = train_images[batch*batch_size : (batch+1)*batch_size]
+                            train_y = train_labels[batch*batch_size : (batch+1)*batch_size]
                             _, cost = sess.run([model.optimizer, model.cost],
                                 feed_dict={model.x : train_x, model.y : train_y})
                             avg_cost += cost / num_batches
 
-                    accuracy = sess.run([model.accuracy], feed_dict={model.x : data.test.images, model.y : data.test.labels})
+                    accuracy = sess.run([model.accuracy], feed_dict={model.x : test_images, model.y : test_labels})
 
                     if accuracy[0] > bestAcc:
                         bestAcc = accuracy
@@ -92,17 +122,18 @@ def CNN():
     with tf.Session() as sess:
         sess.run(model.init)
 
-        num_batches = len(data.train.images) // batch_size
+        num_batches = len(train_images) // batch_size
         for epoch in range(num_epoch):
             avg_cost = 0
             for batch in range(num_batches):
-                train_x, train_y = data.train.next_batch(batch_size)
+                train_x = train_images[batch*batch_size : (batch+1)*batch_size]
+                train_y = train_labels[batch*batch_size : (batch+1)*batch_size]
 
                 _, c = sess.run([model.optimizer, model.cost], feed_dict={model.x : train_x, model.y : train_y})
                 avg_cost += c / num_batches
 
             # calculate the accuracy afer each epoch
-            acc = sess.run([model.accuracy], feed_dict={model.x : data.test.images, model.y : data.test.labels})[0]
+            acc = sess.run([model.accuracy], feed_dict={model.x : test_images, model.y : test_labels})[0]
             print("Epoch {:.3f} Average Cost: {:.3f}".format(epoch+1, avg_cost))
             print("Epoch {:.3f} Accuracy: {:.3f}".format(epoch+1, acc))
 
