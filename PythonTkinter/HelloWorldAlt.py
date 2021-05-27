@@ -19,7 +19,7 @@ class App:
 
     # Function that prints something
     def say_hi(self):
-        print("hi！")
+        print("hi!")
 
 # Create Tk object and pass it into the 'App' class
 root = Tk()
