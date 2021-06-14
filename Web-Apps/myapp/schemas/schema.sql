@@ -1,0 +1,5 @@
+CREATE TABLE leads (
+    id SERIAL NOT NULL PRIMARY KEY, 
+    createdOn DATE DEFAULT CURRENT DATE, 
+    updatedOn DATE DEFAULT CURRENT DATE, 
+    email TEXT);

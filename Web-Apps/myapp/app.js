@@ -3,6 +3,13 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+// database setup
+var { Pool } = require('pg');
+var pool = new Pool({
+  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:menkey_braintoobigforlife@localhost:5432/postgres',
+  ssl: process.env.DATABASE_URL ? true : false
+});
+exports.pool = pool;
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
