@@ -90,13 +90,32 @@ exports.edit_lead = async function(req, res, next) {
   // req.params.lead_id - from path
   // req.body.lead_email - from html page
 
-  // Get all leads
+  // Edits a specific lead
   try{
     const client = await pool.pool.connect();
 
     const result = await client.query('UPDATE leads SET email=\''+req.body.lead_email+'\' WHERE id=\''+req.params.lead_id+'\';');
 
     res.redirect('/lead/'+ req.params.lead_id);
+
+    client.release();
+  } catch (err){
+
+    console.error(err);
+    res.send("Error "+err)
+  }
+}
+
+// Deletes a lead
+exports.delete_lead = async function(req, res, next) {
+
+  // Deletes a lead
+  try{
+    const client = await pool.pool.connect();
+
+    const result = await client.query('DELETE FROM leads WHERE id=\''+req.params.lead_id+'\';');
+
+    res.redirect('/leads');
 
     client.release();
   } catch (err){

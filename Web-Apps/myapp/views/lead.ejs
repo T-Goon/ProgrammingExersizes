@@ -9,6 +9,10 @@
         <span>
             <%= lead.email %>
             <a href='/lead/<%= lead.id %>/edit'> Edit </a>
+            <!-- Button to delete a lead -->
+            <form action="/lead/<%= lead.id %>/delete" method="POST">
+              <button type="submit"> Delete </button>
+            </form>
         </span>
     </p>
   </body>
