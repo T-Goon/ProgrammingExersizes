@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script type="text/javascript" src="/javascripts/leads.js"></script>
-  </head>
+  
+  <%- include('common/head'); %>
+  
   <body>
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
+
     <form action="/" method="POST">
       <input name="lead_email" type="email" placeholder="Enter Your Email">
       <button type="submit">Submit</button>
@@ -29,5 +27,7 @@
 
     <% } %>
 
+    <%- include('common/footer'); %>
+    <script type="text/javascript" src="/javascripts/leads.js"></script>
   </body>
 </html>

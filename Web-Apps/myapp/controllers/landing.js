@@ -2,7 +2,7 @@ const pool = require('../app')
 
 // Show default landing page
 exports.get_landing = function(req, res, next) {
-    res.render('landing', { title: 'Express' });
+    res.render('landing', { title: 'Express'});
   }
 
 // Submit a lead email
@@ -19,6 +19,7 @@ exports.submit_lead = async function(req, res, next) {
     + 'NOW()::date' + ', '
     + 'NOW()::date' + ', '+
      '\''+req.body.lead_email+'\');');
+
     client.release();
   } catch (err){
     console.error(err);
@@ -56,7 +57,7 @@ exports.show_lead = async function(req, res, next) {
 
     const result = await client.query('SELECT * FROM leads WHERE id=\''+req.params.lead_id+'\';');
 
-    res.render('lead', { lead: result.rows[0] });
+    res.render('lead', { title: 'Express', lead: result.rows[0] });
 
     client.release();
   } catch (err){
@@ -75,7 +76,7 @@ exports.show_edit_lead = async function(req, res, next) {
 
     const result = await client.query('SELECT * FROM leads WHERE id=\''+req.params.lead_id+'\';');
 
-    res.render('lead/edit_lead', { lead: result.rows[0] });
+    res.render('lead/edit_lead', { title: 'Express', lead: result.rows[0] });
 
     client.release();
   } catch (err){
