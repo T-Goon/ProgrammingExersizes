@@ -16,7 +16,12 @@
       <h1>Leads</h1>
 
       <% for(var i=0;i<leads.length; i++) {%>
-        <p><%= leads[i].email %></p>
+        <p>
+          <span>
+            <%= leads[i].email %>
+            <a href="/lead/<%= leads[i].id %>"> Details </a>
+          </span>
+        </p>
      <% } %>
 
     <% } %>
