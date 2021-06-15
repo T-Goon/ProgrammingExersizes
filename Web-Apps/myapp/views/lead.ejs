@@ -5,6 +5,11 @@
   </head>
   <body>
     <h1>Lead</h1>
-    <p><%= lead.email %></p>
+    <p>
+        <span>
+            <%= lead.email %>
+            <a href='/lead/<%= lead.id %>/edit'> Edit </a>
+        </span>
+    </p>
   </body>
 </html>
