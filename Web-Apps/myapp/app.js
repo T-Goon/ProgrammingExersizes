@@ -3,6 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+let passport = require('passport');
+let session = require('express-session');
 // database setup
 var { Pool } = require('pg');
 var pool = new Pool({
@@ -13,6 +15,9 @@ exports.pool = pool;
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+
+// Setup passport
+require('./passport_setup')(passport);
 
 var app = express();
 
@@ -26,6 +31,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// session and passport setup for authentication
+// NOTE: do not change order of lines
+app.use(session({ secret: 'my secret' }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Website routes
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 

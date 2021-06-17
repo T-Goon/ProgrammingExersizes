@@ -1,4 +1,4 @@
-const pool = require('../app')
+const pool = require('../app');
 
 // Show default landing page
 exports.get_landing = function(req, res, next) {
