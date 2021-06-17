@@ -39,7 +39,7 @@ exports.show_leads = async function(req, res, next) {
 
     const result = await client.query('SELECT * FROM leads;');
 
-    res.render('landing', { title: 'Express', leads: result.rows})
+    res.render('lead/leads', { title: 'Express', leads: result.rows})
 
     client.release();
   } catch (err){
@@ -57,7 +57,7 @@ exports.show_lead = async function(req, res, next) {
 
     const result = await client.query('SELECT * FROM leads WHERE id=\''+req.params.lead_id+'\';');
 
-    res.render('lead', { title: 'Express', lead: result.rows[0] });
+    res.render('lead/lead', { title: 'Express', lead: result.rows[0] });
 
     client.release();
   } catch (err){
