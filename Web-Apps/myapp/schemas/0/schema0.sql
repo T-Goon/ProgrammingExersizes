@@ -1,0 +1,7 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE IF NOT EXISTS leads (
+    id UUID NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(), 
+    createdOn DATE DEFAULT CURRENT_DATE, 
+    updatedOn DATE DEFAULT CURRENT_DATE, 
+    email TEXT);
