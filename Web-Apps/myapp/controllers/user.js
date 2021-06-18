@@ -37,16 +37,24 @@ exports.signup = async function(req, res, next) {
             rerender_signup(errors, req, res, next);
         } else {
             // Successfully signup
-            try{
+            try {
                 const client = await pool.pool.connect();
-            
-                const result = await client.query('INSERT INTO users (email, password) \
-                VALUES ('
-                + '\'' + req.body.email + '\', '
-                + '\''+ password + '\');');
+                
+                const result = await client.query('SELECT * FROM users WHERE isAdmin=true;');
+
+                let admin = 'false';
+                if (result.rowCount == 0) {
+                    // Next user will be an admin if there are no admins
+                    admin = 'true';
+                } 
+                result = await client.query('INSERT INTO users (email, password, isAdmin) \
+                    VALUES ('
+                    + '\'' + req.body.email + '\', '
+                    + '\''+ password + '\', '+
+                    admin + ');');
             
                 client.release();
-              } catch (err){
+              } catch (err) {
                 console.error(err);
               }
             

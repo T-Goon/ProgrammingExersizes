@@ -19,13 +19,14 @@
                                     <div class="form-group">
 
                                         <label class="small mb-1 mt-3">Email:</label>
-                                        <input class="form-control" placeholder="Enter Your Email" name="email" type="email" value=
+                                        <input class="form-control" placeholder="Enter Your Email" name="email" type="email" required 
+                                            value=
                                             <% if (typeof formData != 'undefined') { %>
                                                 <%= formData.email %>
                                             <% } else { %>
                                                 <%= '' %>
                                             <% } %>
-                                            required>
+                                            >
 
                                         <% if (typeof errors != 'undefined' && typeof errors.email != 'undefined') { %>
                                             <p class="small text-danger"><%= errors.email %></p>
