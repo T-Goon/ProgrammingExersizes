@@ -1,6 +1,7 @@
-const pool = require('app');
+const pool = require('./app');
 let LocalStrategy = require('passport-local').Strategy;
 let bcrypt = require('bcrypt');
+const flash = require('connect-flash');
 
 // Checks if password is valid
 const vailidPassword = function(user, password) {
@@ -49,6 +50,16 @@ module.exports = function(passport) {
         async function(req, email, password, done) {
             try{
                 const client = await pool.pool.connect();
+
+                if(req.path == '/signup') {
+                    const result = await client.query('SELECT * FROM users \
+                    WHERE email=\''+email+'\';');
+
+                    if(result.rowCount > 0){
+                        req.flash('message', "Email in use.");
+                        return done(null, false);
+                    }
+                }
             
                 const result = await client.query('SELECT * FROM users WHERE email=\''+email+'\';');
             
@@ -70,6 +81,7 @@ module.exports = function(passport) {
                 }
     
               } catch (err){
+                console.log(err);
                 done(err, false);
               }
         }

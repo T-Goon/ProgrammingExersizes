@@ -2,7 +2,7 @@ const pool = require('../app');
 
 // Show default landing page
 exports.get_landing = function(req, res, next) {
-    res.render('landing', { title: 'Express'});
+    res.render('landing', { title: 'Express', user: req.user});
   }
 
 // Submit a lead email
@@ -23,7 +23,6 @@ exports.submit_lead = async function(req, res, next) {
     client.release();
   } catch (err){
     console.error(err);
-    res.send("Error "+err)
   }
 
   res.redirect('/leads');

@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 let passport = require('passport');
 let session = require('express-session');
+const flash = require('connect-flash');
 // database setup
 var { Pool } = require('pg');
 var pool = new Pool({
@@ -31,11 +32,15 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(flash());
+
 // session and passport setup for authentication
 // NOTE: do not change order of lines
 app.use(session({ secret: 'my secret' }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+
 
 // Website routes
 app.use('/', indexRouter);
