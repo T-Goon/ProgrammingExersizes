@@ -50,16 +50,6 @@ module.exports = function(passport) {
         async function(req, email, password, done) {
             try{
                 const client = await pool.pool.connect();
-
-                if(req.path == '/signup') {
-                    const result = await client.query('SELECT * FROM users \
-                    WHERE email=\''+email+'\';');
-
-                    if(result.rowCount > 0){
-                        req.flash('message', "Email in use.");
-                        return done(null, false);
-                    }
-                }
             
                 const result = await client.query('SELECT * FROM users WHERE email=\''+email+'\';');
             
