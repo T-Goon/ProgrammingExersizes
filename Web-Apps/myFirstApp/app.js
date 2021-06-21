@@ -10,8 +10,9 @@ const flash = require('connect-flash');
 var { Pool } = require('pg');
 var pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgresql://postgres:menkey_braintoobigforlife@localhost:5432/postgres',
-  ssl: process.env.DATABASE_URL ? true : false
+  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false 
 });
+// ssl: { rejectUnauthorized: process.env.DATABASE_URL ? true : false }
 exports.pool = pool;
 
 var indexRouter = require('./routes/index');
