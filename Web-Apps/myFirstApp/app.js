@@ -8,8 +8,10 @@ let session = require('express-session');
 const flash = require('connect-flash');
 // database setup
 var { Pool } = require('pg');
+const pg_username = process.env.PG_USERNAME;
+const pg_password = process.env.PG_PASSWORD;
 var pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:menkey_braintoobigforlife@localhost:5432/postgres',
+  connectionString: process.env.DATABASE_URL || 'postgresql://'+pg_username+':'+pg_password+'@localhost:5432/'+pg_username,
   ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false 
 });
 // ssl: { rejectUnauthorized: process.env.DATABASE_URL ? true : false }
